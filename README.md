@@ -1,4 +1,4 @@
-# NewsHelper (work in progress)
+# NewsFriend (work in progress)
 
 A do-it-all News Helper widget to tell you all you need to know about a news link
 
