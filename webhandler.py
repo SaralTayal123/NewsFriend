@@ -9,28 +9,32 @@ class WebProcessor:
     def getUrlData(self, urlString):
         url = self._cleanUrl(urlString)
         mainHeadline = self._getHeadline(url, getError = True)
-        # if isinstance(mainHeadline, dict):
-        #     #already formatted to have the error dictionary
-        #     return mainHeadline 
+        
+        try: #jank sollution to checking if there was an error
+            if 'error' in mainHeadline.keys():
+                return mainHeadline
+        except :
+            pass
 
         #get other relevant news articles
-        releventNewsUrls = self._google(mainHeadline)
+        relatedNewsUrls = self._google(mainHeadline)
 
-        #TODO: add a way to remove the duplicate url
-        ##############################################
-        headlines = []
-        for url in releventNewsUrls:
-            headlines.append(self._getHeadline("https://"+url))
-        ####
-        for i in headlines:
-            print("Headline: ", i)
-            print('\n')
-        ####
-        return {"headline": mainHeadline,
-                "score1": 1, #to be filled in later
-                "score2": 2, #to be filled in later
-                "error": "none",
-        }
+        relatedHeadlines = []
+        for rurl in relatedNewsUrls:
+            if rurl != url: #avoid duplicate urls
+                headline = self._getHeadline("https://"+rurl).strip()
+            if headline != "error": 
+                relatedHeadlines.append({rurl: headline})
+        
+        toReturn = {
+                    "headline": mainHeadline,
+                    "relatedHeadlines": relatedHeadlines,
+                    "score1": 1,  # to be filled in later
+                    "score2": 2,  # to be filled in later
+                    "error": "none",
+                    }
+        return toReturn
+
     def _cleanUrl(self, dirtyUrl):
         urlClean = dirtyUrl.replace("|" ,"/")
         return urlClean
@@ -38,7 +42,8 @@ class WebProcessor:
     def _getHeadline(self, url, getError = False):
         page = requests.get(url)
         if page.status_code != 200:
-            return ({"error": page.status_code})
+            if getError: return ({"error": page.status_code})
+            else: return "error"
         self.soup = BeautifulSoup(page.content,'html.parser')
         headline = self.soup.find_all('h1')
         self.headline = headline[0].text
@@ -67,15 +72,17 @@ class WebProcessor:
             #Yeah it also removes https:// but that doesn't affect
             #my usecase so it doesn't matter
             cleaned = url.partition("https://")[-1]
+            #the & is the junk google adds at the end of urls
             cleaned = cleaned.partition("&")[0]
 
             #filter out some random empty urls i was getting
             if len(cleaned) > 10: 
                 cleanedUrls.append(cleaned) 
         #use the following commented code to check cleaned urls 
-        for i in cleanedUrls:
-            print("URL: ", i)
-            print('\n')
+        # for i in cleanedUrls:
+        #     print("URL: ", i)
+        #     print('\n')
+        
         return(cleanedUrls)
 
 #This main funciton is just for debugging
