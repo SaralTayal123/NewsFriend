@@ -14,9 +14,9 @@
     "default_popup": "popup.html"
 },
 
-  "permissions": ["storage", "tabs", "activeTab", "<all_urls>"],
+  "permissions": ["storage", "tabs", "activeTab", "<all_urls>", "contextMenus"],
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["contextMenu.js"],
     "persistent": false
   },
 
