@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+  "name": "NewsFriend",
+  "description": "An extension to help you with news sources on the internet",
+  "version": "1.0",
+  "icons": {
+    "128": "icon128.png",
+    "48": "icon48.png",
+    "16": "icon16.png"
+  },
+
+"browser_action": {
+  "default_icon": "icon16.png",
+    "default_popup": "popup.html"
+},
+
+  "permissions": ["storage", "tabs", "activeTab", "<all_urls>"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+
+  "content_scripts": [
+    {
+    "matches": ["<all_urls>"],
+    "js": ["content.js", "jquery-3.4.1.min.js"]
+    }
+  ]
+}
