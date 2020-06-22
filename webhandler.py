@@ -1,16 +1,21 @@
 import requests
 from bs4 import BeautifulSoup
 
+
 # the reason I'm using  '|' in my urls instead of '/' is because i want to pass
 # my url within the api request url... That's why i need to do preprocessing
 # The chrome extension will convert the url to use '|' before an API call
 
 class WebProcessor:
+
     def getUrlData(self, urlString):
         url = self._cleanUrl(urlString)
-        mainHeadline = self._getHeadline(url, getError = True)
-        
-        try: #jank sollution to checking if there was an error
+        mainUrlData = self._getData(url, getError = True)
+
+        mainHeadline = mainUrlData.get("headline")
+        mainText = mainUrlData.get("text")
+
+        try:  # jank sollution to checking if there was an error
             if 'error' in mainHeadline.keys():
                 return mainHeadline
         except :
@@ -18,19 +23,24 @@ class WebProcessor:
 
         #get other relevant news articles
         relatedNewsUrls = self._google(mainHeadline)
-
-        relatedHeadlines = []
+        relatedNews = []
         for rurl in relatedNewsUrls:
             if rurl != url: #avoid duplicate urls
-                headline = self._getHeadline("https://"+rurl).strip()
-            if headline != "error": 
-                relatedHeadlines.append({rurl: headline})
+                data = self._getData("https://"+rurl)
+            if data != "error":
+                headline = data.get("headline").strip()
+                text = data.get("text")
+                relatedNews.append({
+                    "url": rurl,
+                    "text": text,
+                    "headline":headline
+                })
+                    
         
         toReturn = {
                     "headline": mainHeadline,
-                    "relatedHeadlines": relatedHeadlines,
-                    "score1": 1,  # to be filled in later
-                    "score2": 2,  # to be filled in later
+                    "maintext": mainText,
+                    "relatedNews": relatedNews,
                     "error": "none",
                     }
         return toReturn
@@ -39,15 +49,23 @@ class WebProcessor:
         urlClean = dirtyUrl.replace("|" ,"/")
         return urlClean
 
-    def _getHeadline(self, url, getError = False):
+    def _getData(self, url, getError=False):
         page = requests.get(url)
         if page.status_code != 200:
-            if getError: return ({"error": page.status_code})
-            else: return "error"
-        self.soup = BeautifulSoup(page.content,'html.parser')
-        headline = self.soup.find_all('h1')
-        self.headline = headline[0].text
-        return self.headline
+            toRet = {"error": page.status_code} if getError else "error"
+            return toRet
+
+        soup = BeautifulSoup(page.content,'html.parser')
+        
+        headline = soup.find_all('h1')
+        headline = headline[0].text if len(headline) != 0 else "No Headline"
+
+        text = self.getText(soup)
+
+        return {
+            "headline": headline,
+            "text": text,
+            }
 
     def _google(self, query):
         googleUrl= "https://www.google.com/search?client=ubuntu&channel=fs&q=" + query + "&ie=utf-8&oe=utf-8"
@@ -84,9 +102,20 @@ class WebProcessor:
         #     print('\n')
         
         return(cleanedUrls)
+    
+    def getText(self, soup):
+        paragraphs = soup.find_all('p')
+        text = [para.getText() for para in paragraphs] #get text from each paragraph
+        text = [t for t in text if len(t) > 30] #filter short unwanted text
+        text = " ".join(text) # join it
+        
+        # print(text)
+        return text
+
+
 
 #This main funciton is just for debugging
 if __name__ == "__main__":
     a = WebProcessor()
-    title = a.getUrlData("https:||www.bbc.com|news|live|world-53126072")
+    title = a.getUrlData("https:||www.bbc.com|news|world-us-canada-53129524")
     # print(title)
