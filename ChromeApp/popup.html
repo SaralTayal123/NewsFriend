@@ -1,54 +1,75 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="UTF-8" />
+        <!-- <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-        <style>
-            button {
-                height: 30px;
-                width: 30px;
-                outline: none;
-                
-            }
-        </style>
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" /> -->
+        <link rel="stylesheet" href="popup.css">
     </head>
 
     <body>
-        <h1>
-            News Friend
-        </h1>
-        <table style="width:100%">
-            <tr>
-                <th>Category</th>
-                <td>insert</td>
-            </tr>
-            <tr>
-                <th>Sentiment</th>
-                <td>insert</td>
-            </tr>
-            <tr>
-                <th>Sentiment rating</th>
-                <td>insert</td>
-            </tr>
-            <tr>
-                <th>Sarcasm</th>
-                <td>insert</td>
-            </tr>
-            <tr>
-                <th>FakeNews</th>
-                <td>insert</td>
-            </tr>
-        </table>
-        <button id="generate" style="width: 100%;">
-            Generate Ratings
-        </button>
-        <button id="summarize" style="width: 100%;">
-            Summarize
-        </button>
+        <div id = "App">
+            <h1 id="replace with logo">
+                News Friend
+            </h1>
+            <h1 id="Headline">
+                Headline
+            </h1>
+            <div class="column">
+                <div class="row">
+                    <h1>
+                        Title Goes Here
+                    </h1>
+                </div>
+                <div class="row">
+                    <h4>
+                        Website Goes Here
+                    </h4>
+                </div>
+                <div class="row">
+                    <h3>
+                        Title Goes Here
+                    </h3>
+                </div>
+                <div class="row">
+                    <h3>
+                        Title Goes Here
+                    </h3>
+                </div>
+                <div class="dials">
+                    <div class="dial">
+                        <div id="readdability"></div>
+                    </div>
+                    <div class="dial">
+                        <div id="relativeReaddability"></div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div id="readingTime">
+                    </div>
+                </div>
+            
+                <hr>
+                <div class="row">
+                    <h2>
+                        Related
+                    </h2>
+                </div>
+            
+            
+            </div>
+            <button id="generate" style="width: 100%;">
+                Generate Ratings
+            </button>
+            <button id="summarize" style="width: 100%;">
+                Summarize
+            </button>
+        </div>
+        
     </body>
 
-    <script src = "popup.js"></script>
+    <script type="module" src = "popup.js"></script>
     <script src="inject.js"></script>
     <script src = "jquery-3.4.1.min.js"></script>
 
