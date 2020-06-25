@@ -4,6 +4,8 @@ var contextMenuItem = {
   "contexts":["selection"]
 };
 
+var data = 0;
+
 chrome.contextMenus.create(contextMenuItem);
 
 function isValidURL(string) {
@@ -16,8 +18,10 @@ async function requestData(url){
   response = await fetch(url)
   console.log(response.json())
   console.log("got data")
-
+  var data = response.json()
 }
+
+
 chrome.contextMenus.onClicked.addListener(function(clickedItem){
   if (clickedItem.menuItemId == "NewsFriend" && isValidURL(clickedItem.linkUrl)) {
     if (isValidURL(clickedItem.linkUrl)){
