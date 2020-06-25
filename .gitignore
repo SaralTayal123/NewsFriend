@@ -41,3 +41,4 @@ dbpedia_csv/classes.txt
 dbpedia_csv/readme.txt
 dbpedia_csv/test.csv
 dbpedia_csv/train.csv
+azureKey.py

@@ -14,10 +14,10 @@
     "default_popup": "popup.html"
 },
 
-  "permissions": ["storage", "tabs", "activeTab", "<all_urls>", "contextMenus"],
+  "permissions": ["storage", "activeTab", "<all_urls>", "contextMenus"],
   "background": {
     "scripts": ["contextMenu.js"],
-    "persistent": false
+    "persistent": true
   },
 
   "content_scripts": [

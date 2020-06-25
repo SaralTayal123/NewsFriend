@@ -1,5 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
+import azureKey
+from azure.ai.textanalytics import TextAnalyticsClient
+from azure.core.credentials import AzureKeyCredential
+from textPredictors import TextPredicor
+import numpy as np
 
 
 # the reason I'm using  '|' in my urls instead of '/' is because i want to pass
@@ -9,6 +14,9 @@ from bs4 import BeautifulSoup
 class WebProcessor:
 
     def getUrlData(self, urlString):
+        textPredictor = TextPredicor()
+        azureClient = self.authenticate_client()
+
         url = self._cleanUrl(urlString)
         mainUrlData = self._getData(url, getError = True)
 
@@ -21,26 +29,45 @@ class WebProcessor:
         except :
             pass
 
+        readingScores = textPredictor.getTextResults(mainText)
+        mainReadability = readingScores.get("readability")
+        mainReadingTime = readingScores.get("readTime")
+        mainSentiment = self._getSentiment(azureClient, self.trimAzure(mainText)) 
+        
+
         #get other relevant news articles
         relatedNewsUrls = self._google(mainHeadline)
+        relatedNewsUrls = relatedNewsUrls[0:5] # keep only 5
         relatedNews = []
         for rurl in relatedNewsUrls:
             if rurl != url: #avoid duplicate urls
                 data = self._getData("https://"+rurl)
-            if data != "error":
-                headline = data.get("headline").strip()
-                text = data.get("text")
-                relatedNews.append({
-                    "url": rurl,
-                    "text": text,
-                    "headline":headline
-                })
-                    
+                if data != "error":
+                    headline = data.get("headline").strip()
+                    text = data.get("text")
+                    readingscore = textPredictor.getTextResults(text)
+                    readability = readingscore.get("readability")
+                    readingTime = readingscore.get("readTime")
+                    sentiment = 0.5
+                    # sentiment = self._getSentiment(
+                    #     azureClient, self.trimAzure(text))
+                    relatedNews.append({
+                        "url": rurl,
+                        "text": text,
+                        "readability": readability,
+                        "readingTime": readingTime,
+                        "headline":headline,
+                        "sentiment": sentiment
+                    })
+        
+        rating = self._getRating(relatedNews, mainReadability, mainReadingTime, mainSentiment)
         
         toReturn = {
                     "headline": mainHeadline,
                     "maintext": mainText,
                     "relatedNews": relatedNews,
+                    "sentiment": mainSentiment,
+                    "rating": rating,
                     "error": "none",
                     }
         return toReturn
@@ -82,7 +109,7 @@ class WebProcessor:
             except:
                 pass
         return self._urlResultCleanup(urlResults)
-
+    
     def _urlResultCleanup(self, urlResults):
         cleanedUrls = []
         for url in urlResults:
@@ -112,6 +139,69 @@ class WebProcessor:
         # print(text)
         return text
 
+    def authenticate_client(self):
+        # on a seperate git-ignored file
+        ta_credential = AzureKeyCredential(azureKey.key)
+        text_analytics_client = TextAnalyticsClient(
+            endpoint=azureKey.endpoint, credential=ta_credential)
+        return text_analytics_client
+
+    def _getSentiment(self, text):
+        r = requests.post(
+            "https://api.deepai.org/api/sentiment-analysis",
+            data={
+                'text': text,
+            },
+            headers={'api-key': 'quickstart-QUdJIGlzIGNvbWluZy4uLi4K'}
+        )
+        print(r.json())
+        return "veri nice"
+
+    def trimAzure(self, text):
+        trimmed = text[0:5000]
+        return trimmed
+
+    def _getSentiment(self, client, text):
+        documents = [text]
+        response = client.analyze_sentiment(documents=documents)[0]
+        print("Document Sentiment: {}".format(response.sentiment))
+        print("Overall scores: positive={0:.2f}; neutral={1:.2f}; negative={2:.2f} \n".format(
+            response.confidence_scores.positive,
+            response.confidence_scores.neutral,
+            response.confidence_scores.negative,
+        ))
+
+        return (response.confidence_scores.positive * -1) + response.confidence_scores.negative
+
+    def _getRating(self, relatedNews, mainReadability, mainReadingTime, mainSentiment):
+
+        counter = 0
+        avgReadability = 0
+        avgReadingTime = 0
+        avgSentiment = 0 
+        for elem in relatedNews:
+            avgReadability += elem.get("readability")
+            avgReadingTime += elem.get("readingTime")
+            avgSentiment += elem.get("sentiment")
+            counter += 1
+        avgReadability = avgReadability/counter
+        avgReadingTime = avgReadingTime/counter
+        avgSentiment = avgSentiment/counter
+        print("avgReadability, ", avgReadability)
+        print("avgReadingTime, ", avgReadingTime)
+        print("avgSentiment, ", avgSentiment)
+
+
+        sentimentRating = ((mainSentiment / avgSentiment) - 1)
+
+        readabilityRating = ((mainReadability / avgReadability) - 1) * 5  # sensitive up to 20%
+        readabilityRating = np.clip([readabilityRating], -1, 1)[0]
+
+        readingTimeRating = ((mainReadingTime / avgReadingTime) - 1) * 2 # sensitive up to 50%
+        readingTimeRating = np.clip([readingTimeRating], -1, 1)[0]
+
+        finalRating = ((sentimentRating + readabilityRating + readingTimeRating + 3) / 6)
+        return finalRating
 
 
 #This main funciton is just for debugging
@@ -119,3 +209,4 @@ if __name__ == "__main__":
     a = WebProcessor()
     title = a.getUrlData("https:||www.bbc.com|news|world-us-canada-53129524")
     # print(title)
+# "https://www.bbc.com/news/world-us-canada-53129524"
