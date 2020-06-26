@@ -1,0 +1,18 @@
+
+Hope you enjoy your new logo, here are the people that
+made your beautiful logo happen :)
+font name: nevis
+font link: http://tenbytwenty.com/?xxxx_posts=nevis
+font author: Ten by Twenty
+font author site: http://tenbytwenty.com/
+
+
+icon designer: Sergey Demushkin
+icon designer link: /mockturtle
+        
+
+fontColor: {"hex":"#E07A5F"}
+bgColor: {"hex":"#FCFBF5"}
+iconColor: {"hex":"#E07A5F"}
+
+      

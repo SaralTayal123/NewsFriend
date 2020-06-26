@@ -1,0 +1,14 @@
+
+Hope you enjoy your new logo, here are the people that
+made your beautiful logo happen :)
+font name: nevis
+font link: http://tenbytwenty.com/?xxxx_posts=nevis
+font author: Ten by Twenty
+font author site: http://tenbytwenty.com/
+
+
+icon designer: Sergey Demushkin
+icon designer link: /mockturtle
+        
+{"bg":"#FDEDDF","icon-gradient-0":"#E63500","icon-gradient-1":"#FFC316","font":"#361A02","slogan":"#4a2e16"}
+      

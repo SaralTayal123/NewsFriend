@@ -42,3 +42,5 @@ dbpedia_csv/readme.txt
 dbpedia_csv/test.csv
 dbpedia_csv/train.csv
 azureKey.py
+__pycache__/azureKey.cpython-37.pyc
+__pycache__/azure.cpython-37.pyc
