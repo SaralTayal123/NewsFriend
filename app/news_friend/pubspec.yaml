@@ -21,6 +21,9 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  receive_sharing_intent: ^1.4.0+2
+  http: 
+  sleek_circular_slider :
   flutter:
     sdk: flutter
 
