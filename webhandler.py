@@ -37,26 +37,29 @@ class WebProcessor:
 
         #get other relevant news articles
         relatedNewsUrls = self._google(mainHeadline)
-        relatedNewsUrls = relatedNewsUrls[0:5] # keep only 5
+        if url in relatedNewsUrls:
+            print("len before remove: ", len(relatedNewsUrls))
+            relatedNewsUrls.remove(url)
+            print("len after remove: ", len(relatedNewsUrls))
+        relatedNewsUrls = relatedNewsUrls[0:5]  # keep only 5
         relatedNews = []
         for rurl in relatedNewsUrls:
-            if rurl != url: #avoid duplicate urls
-                data = self._getData("https://"+rurl)
-                if data != "error":
-                    headline = data.get("headline").strip()
-                    text = data.get("text")
+            data = self._getData("https://"+rurl)
+            if data != "error": 
+                headline = data.get("headline").strip()
+                text = data.get("text")
+                if len(text) != 0 and len(headline) != 0:
                     readingscore = textPredictor.getTextResults(text)
                     readability = readingscore.get("readability")
                     readingTime = readingscore.get("readTime")
-                    sentiment = 0.5
-                    # sentiment = self._getSentiment(
-                    #     azureClient, self.trimAzure(text))
+                    sentiment = self._getSentiment(
+                        azureClient, self.trimAzure(text))
                     relatedNews.append({
                         "url": rurl,
-                        "text": text,
+                        "headline":headline,
+                        # "text": text,
                         "readability": readability,
                         "readingTime": readingTime,
-                        "headline":headline,
                         "sentiment": sentiment
                     })
         
@@ -171,7 +174,7 @@ class WebProcessor:
             response.confidence_scores.negative,
         ))
 
-        return (response.confidence_scores.positive * -1) + response.confidence_scores.negative
+        return response.confidence_scores.positive + (response.confidence_scores.negative * -1)
 
     def _getRating(self, relatedNews, mainReadability, mainReadingTime, mainSentiment):
 
@@ -184,23 +187,36 @@ class WebProcessor:
             avgReadingTime += elem.get("readingTime")
             avgSentiment += elem.get("sentiment")
             counter += 1
+
         avgReadability = avgReadability/counter
         avgReadingTime = avgReadingTime/counter
         avgSentiment = avgSentiment/counter
-        print("avgReadability, ", avgReadability)
-        print("avgReadingTime, ", avgReadingTime)
-        print("avgSentiment, ", avgSentiment)
+        # print("avgReadability, ", avgReadability)
+        # print("avgReadingTime, ", avgReadingTime)
+        # print("avgSentiment, ", avgSentiment)
 
 
-        sentimentRating = ((mainSentiment / avgSentiment) - 1)
+        # the 0.000001 is to avoid div by 0
+        sentimentRating = ((((mainSentiment + 1)/2) / (((avgSentiment + 1)/2)+0.000001)) - 1) * 1.33 #sensitive to 75%
+        sentimentRating = np.clip([sentimentRating], -1, 1)[0]
 
-        readabilityRating = ((mainReadability / avgReadability) - 1) * 5  # sensitive up to 20%
+        readabilityRating = ((mainReadability / avgReadability + 0.0000001) - 1) * 2.5  # sensitive up to 40%
         readabilityRating = np.clip([readabilityRating], -1, 1)[0]
 
-        readingTimeRating = ((mainReadingTime / avgReadingTime) - 1) * 2 # sensitive up to 50%
+        readingTimeRating = ((avgReadingTime/(mainReadingTime + 0.00001)) - 1) * 2  # sensitive up to 50%
         readingTimeRating = np.clip([readingTimeRating], -1, 1)[0]
 
+        # print("mainReadability, ", mainReadability)
+        # print("mainReadingTime, ", mainReadingTime)
+        # print("mainSentiment, ", mainSentiment)
+
+        # print("mainReadability rating, ", readabilityRating)
+        # print("mainReadingTime rating, ", readingTimeRating)
+        # print("mainSentiment rating, ", sentimentRating)
+
+
         finalRating = ((sentimentRating + readabilityRating + readingTimeRating + 3) / 6)
+        print(finalRating)
         return finalRating
 
 
@@ -208,5 +224,7 @@ class WebProcessor:
 if __name__ == "__main__":
     a = WebProcessor()
     title = a.getUrlData("https:||www.bbc.com|news|world-us-canada-53129524")
+    print('\n')
+    print('\n')
     # print(title)
 # "https://www.bbc.com/news/world-us-canada-53129524"
