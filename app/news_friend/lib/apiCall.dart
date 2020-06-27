@@ -6,25 +6,24 @@ import 'dart:convert';
 class NewsData{
   String url;
   String headline;
-  String text;
+  String provider;
   double sentiment;
   double readability;
   double readingTime;
   double rating;
-  List otherNews;
+  List relatedNews;
 
-  NewsData({this.url, this.headline, this.text, this.sentiment, this.readability, this.readingTime, this. rating, this.otherNews});
+  NewsData({this.url, this.headline, this.provider, this.sentiment, this.readability, this.readingTime, this. rating, this.relatedNews});
 
   factory NewsData.fromJson(Map<String, dynamic> json) {
     return NewsData(
-      url: json['url'],
       headline: json['headline'],
-      text: json['text'],
       sentiment: json['sentiment'],
       readability: json['readability'],
       readingTime: json['readingTime'],
       rating: json['rating'],
-      otherNews: json['otherNews'],
+      relatedNews: json['relatedNews'],
+      provider: json['newsProvider']
     );
   }
 }
@@ -36,17 +35,15 @@ class ApiCall{
     // Merge with API url
 
     //************************************** */
+    print("getting information from: " + "https://newsfriend.herokuapp.com/ping/" + url);
+    var response = await http.get("https://newsfriend.herokuapp.com/ping/" + url); // change to API url
 
-    var response = await http.get("https://www.google.com"); // change to API url
-    var temp = NewsData();
-    return temp;
-    //************************************** */
-    // if (response.statusCode == 200) {
-    //   return NewsData.fromJson(json.decode(response.body));
-    // } 
-    // else {
-    //   throw Exception('Failed to get data');
-    // }
+    if (response.statusCode == 200) {
+      return NewsData.fromJson(json.decode(response.body));
+    } 
+    else {
+      throw Exception('Failed to get data');
+    }
 
   }
 

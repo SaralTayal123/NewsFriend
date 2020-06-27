@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'Loading.dart';
 import 'urlProcessing.dart';
+import 'package:page_transition/page_transition.dart';
 
 
 
@@ -23,7 +24,13 @@ class _HomescreenState extends State<Homescreen> {
       sharedText = processedUrl;
     });
     if (processedUrl != "Invalid URL"){
-      Navigator.push(context,MaterialPageRoute(builder: (context) => Loading(processedUrl)));
+      // Navigator.push(context,MaterialPageRoute(builder: (context) => Loading(processedUrl, original)));
+      Navigator.push(context, PageTransition(type: PageTransitionType.fade, duration: Duration(milliseconds: 500), child: Loading(processedUrl, original)));
+
+      // Navigator.of(context).push(PageRouteTransition(
+      //   animationType: AnimationType.fade,
+      //   curves: Curves.easeInOut,
+      //   builder: (context) => Loading(processedUrl, original))); 
     }
     else{
       ShowDialog(context, original);
@@ -64,23 +71,31 @@ class _HomescreenState extends State<Homescreen> {
         title: const Text('News Friend'),
         ),
       body: Center(
-        child: Column(children: <Widget>[
-          Text("make sure to include https:// or http:// before your url. Eg \"https://google.com\" "),
-          TextField(
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: sharedText
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Hero(
+              tag: 'logo',
+              child: Image(image: AssetImage('assets/cover.png')),
+              ),
+            Text("make sure to include https:// or http:// before your url. Eg \"https://google.com\" "),
+            TextField(
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: sharedText
+              ),
+              onChanged: (text) {
+                sharedText = text;
+              }
             ),
-            onChanged: (text) {
-              sharedText = text;
-            }
-          ),
-          RaisedButton(
-            child: Text("Submit"),
-            onPressed: (){
-              processUrl(sharedText, callback: urlCallback);
-            },
-          )
+            RaisedButton(
+              child: Text("Submit"),
+              onPressed: (){
+                processUrl(sharedText, callback: urlCallback);
+              },
+            ),
+            Expanded(flex : 2, child: Container())
         ],),
         )
       );
