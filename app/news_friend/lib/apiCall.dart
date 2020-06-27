@@ -35,14 +35,20 @@ class ApiCall{
     //Clean URL
     // Merge with API url
 
-    var response = await http.get(url); // change to API url
-    if (response.statusCode == 200) {
-      return NewsData.fromJson(json.decode(response.body));
-    } 
-    else {
-      throw Exception('Failed to get data');
-    }
+    //************************************** */
+
+    var response = await http.get("https://www.google.com"); // change to API url
+    var temp = NewsData();
+    return temp;
+    //************************************** */
+    // if (response.statusCode == 200) {
+    //   return NewsData.fromJson(json.decode(response.body));
+    // } 
+    // else {
+    //   throw Exception('Failed to get data');
+    // }
 
   }
 
 }
+

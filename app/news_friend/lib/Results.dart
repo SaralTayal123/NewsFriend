@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'apiCall.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
+import 'apiCall.dart';
 
 
 
 class Results extends StatefulWidget {
+  NewsData newsData;
+  Results(this.newsData);
   @override
   _ResultsState createState() => _ResultsState();
 }
