@@ -23,6 +23,7 @@ class _ResultsState extends State<Results>{
         tag: 'logo',
         child: Image(image: AssetImage('assets/cover.png')),
         ),
+      Image.network(widget.newsData.image),
       Text(widget.newsData.headline),
       Text(widget.newsData.provider),
       Text(" Category goes here "),
@@ -56,10 +57,35 @@ class _ResultsState extends State<Results>{
     widget.newsData.relatedNews.forEach((element) {
       print("news item \n");
       print (element);
+      resultWidgets.add(newsWidgetGenerator(element));
      });
 
     super.initState();
   }
+
+  Widget newsWidgetGenerator(element){
+    return Container(
+      child: Row(children: <Widget>[
+        Expanded(
+          child: Image.network(element['image']),// add image,
+          flex: 2
+          ),
+        Expanded(
+          flex: 3,
+          child: Column(children: <Widget>[
+            Text(element['headline']),
+            Text(element['newsProvider']),
+            Text(element['readability'].toString()),
+            Text(element['readingTime'].toString()),
+            Text(element['sentiment'].toString()),
+          ],)
+          )
+        
+      ],),
+      );
+
+  }
+
 
 
   @override

@@ -5,6 +5,7 @@ import 'dart:convert';
 
 class NewsData{
   String url;
+  String image;
   String headline;
   String provider;
   double sentiment;
@@ -13,7 +14,7 @@ class NewsData{
   double rating;
   List relatedNews;
 
-  NewsData({this.url, this.headline, this.provider, this.sentiment, this.readability, this.readingTime, this. rating, this.relatedNews});
+  NewsData({this.url, this.headline, this.provider, this.sentiment, this.readability, this.readingTime, this. rating, this.relatedNews, this.image});
 
   factory NewsData.fromJson(Map<String, dynamic> json) {
     return NewsData(
@@ -23,7 +24,8 @@ class NewsData{
       readingTime: json['readingTime'],
       rating: json['rating'],
       relatedNews: json['relatedNews'],
-      provider: json['newsProvider']
+      provider: json['newsProvider'],
+      image: json['image']
     );
   }
 }
