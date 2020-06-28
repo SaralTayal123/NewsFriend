@@ -19,10 +19,7 @@ class _ResultsState extends State<Results>{
   @override
   void initState() {
     resultWidgets = [
-      Hero(
-        tag: 'logo',
-        child: Image(image: AssetImage('assets/cover.png')),
-        ),
+      Text("Placeholder"),
       Image.network(widget.newsData.image),
       Text(widget.newsData.headline),
       Text(widget.newsData.provider),
@@ -78,6 +75,7 @@ class _ResultsState extends State<Results>{
             Text(element['readability'].toString()),
             Text(element['readingTime'].toString()),
             Text(element['sentiment'].toString()),
+            Text(element['rating'].toString()),
           ],)
           )
         
@@ -90,14 +88,56 @@ class _ResultsState extends State<Results>{
 
   @override
   Widget build(BuildContext context) {
+    Size preferredSize = Size.fromHeight(MediaQuery.of(context).size.height/3.5);
+    resultWidgets[0] = Hero(
+          tag: "head",
+          child: Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+            SizedBox.fromSize(
+            size: preferredSize,
+            child: new LayoutBuilder(builder: (context, constraint) {
+              final width = constraint.maxWidth * 8;
+              return new ClipRect(
+                child: new OverflowBox(
+                  maxHeight: double.infinity,
+                  maxWidth: double.infinity,
+                  child: new SizedBox(
+                    width: width,
+                    height: width,
+                    child: new Padding(
+                      padding: new EdgeInsets.only(
+                        bottom: (width / 2 - preferredSize.height / 2) + 20),                    
+                      child: new DecoratedBox(
+                        position: DecorationPosition.background,
+                        decoration: new BoxDecoration(
+                          color: Color(0xfffdedee),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            new BoxShadow(color: Colors.black54, offset: Offset.fromDirection(180, 10), blurRadius: 20.0, spreadRadius: 1)
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+            Center(
+              // child: Hero(
+              //   tag: 'logo',
+                child: Image(image: AssetImage('assets/cover.png')),
+                // ),
+            ),
+          ],
+          // padding: EdgeInsets.only(bottom: 10),
+        ),
+      );
     const textStyleBold = const TextStyle(fontWeight: FontWeight.bold);
     return MaterialApp(
           home: Scaffold(
-            appBar: AppBar(
-              title: const Text('News Friend'),
-            ),
             body: ListView(
-              padding: const EdgeInsets.all(8),
               children: resultWidgets
             )
             
