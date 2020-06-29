@@ -22,9 +22,11 @@ class _LoadingState extends State<Loading>{
     String end = ".";
     final startIndex = str.indexOf(start);
     final endIndex = str.indexOf(end, (startIndex + start.length + 1));
-
-    return (str.substring(startIndex + start.length, endIndex)); 
+    String toRet =str.substring(startIndex + start.length, endIndex);
+    toRet = toRet.toUpperCase();
+    return toRet; 
   }
+  
 
   void apiCall() async{
     var api = ApiCall();
@@ -114,6 +116,7 @@ class _LoadingState extends State<Loading>{
                   ),
               ),
               Container(
+                alignment: Alignment.center,
                 margin: EdgeInsets.all(10),
                 child: Text(
                   newsProvider(widget.url),
@@ -125,9 +128,11 @@ class _LoadingState extends State<Loading>{
                     )
                   ),
               Container(
+                alignment: Alignment.center,
                 margin: EdgeInsets.all(10),
                 child: Text(
                   (widget.originalUrl),
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.zillaSlab(
                     color: Color(0xff003045),
                     fontSize: 20.0,
