@@ -79,7 +79,6 @@ class _HomescreenState extends State<Homescreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.center,
-          
           children: <Widget>[
             Stack(
               alignment: Alignment.center,
@@ -168,13 +167,46 @@ class _HomescreenState extends State<Homescreen> {
                 ],
               ),
             ),
-            
-            
-            Expanded(flex : 2, child: Container())
+            Expanded(flex : 2, child: Container(
+              child: IconButton(
+              icon: Icon(Icons.info, size: 40),
+              onPressed: (){
+                showDialog(
+                context: context,
+                builder: (BuildContext context) => aboutDialog(context),
+              );
+              }),
+            ))
         ],),
         )
       );
   }
 }
 
+Widget aboutDialog(BuildContext context) {
+    return new AlertDialog(
+      title: const Text('How to use', textAlign: TextAlign.center,),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text("This is a fairly simple app that allows you to pre-filter any news article before reading it. \n \nTo do so, simply paste a url above or share the article to the NewsFriend app from your browser. \n\nThe app will find the best alternative articles and rank your article based on readability/complexity of language, reading time/ article length, and the article's sentiment. After doing this for all the alternative articles, the algorithm will suggest rate your article and suggest the best alternative articles for you to read!")
+        ],
+      ),
+      actions: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              textColor: Theme.of(context).primaryColor,
+              child: const Text('Okay, got it!', textAlign: TextAlign.center,),
+            )
+          ]
+        ),
+      ],
+    );
+}
 

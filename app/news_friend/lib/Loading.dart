@@ -120,6 +120,7 @@ class _LoadingState extends State<Loading>{
                 margin: EdgeInsets.all(10),
                 child: Text(
                   newsProvider(widget.url),
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.zillaSlab(
                     color: Color(0xff003045),
                     fontSize: 50.0,

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'apiCall.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:url_launcher/url_launcher.dart';
+// import 'package:weather_icons/weather_icons.dart';
 
 
 
@@ -49,7 +50,7 @@ class _ResultsState extends State<Results>{
           padding: EdgeInsets.all(5),
           margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
           alignment: Alignment.center,
-          child: Text("Headline: " + widget.newsData.headline + "- " + widget.newsData.provider,
+          child: Text("Headline: " + widget.newsData.headline,
           textAlign: TextAlign.center,
           style: GoogleFonts.zillaSlab(
                         color: Color(0xff003045),
@@ -67,14 +68,13 @@ class _ResultsState extends State<Results>{
           ),
         ),
         
-        
         Container(
           decoration: cardDecoration(Colors.green, Colors.green, 15),
           padding: EdgeInsets.all(20),
           margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
           alignment: Alignment.center,
           // color: Colors.blue,
-          child: Text(" Category goes here ",
+          child: Text("Provider: " + widget.newsData.provider,
             style: GoogleFonts.zillaSlab(
                         color: Color(0xff003045),
                         fontSize: 25.0,
@@ -104,12 +104,17 @@ class _ResultsState extends State<Results>{
               margin: EdgeInsets.symmetric(vertical: 10),
               alignment: Alignment.center,
               // color: Colors.blue,
-              child:  SleekCircularSlider(
-                appearance: CircularSliderAppearance(),
-                min: 0,
-                max: 100,
-                initialValue: widget.newsData.readability,
-                ),
+              child:  Column(
+                children: [
+                  SleekCircularSlider(
+                    appearance: CircularSliderAppearance(),
+                    min: 0,
+                    max: 100,
+                    initialValue: widget.newsData.readability,
+                    ),
+                    textFormatted("Readability", 20, FontWeight.w500, Color(0xff003045))
+                ],
+              ),
             ),
             Container(
               decoration: cardDecoration(Colors.white, Colors.grey, 15),
@@ -117,11 +122,16 @@ class _ResultsState extends State<Results>{
               margin: EdgeInsets.symmetric(vertical: 10),
               alignment: Alignment.center,
               // color: Colors.blue,
-              child: SleekCircularSlider(
-                appearance: CircularSliderAppearance(),
-                min: 0,
-                max: 15,
-                initialValue: widget.newsData.readingTime,
+              child: Column(
+                children: [
+                  SleekCircularSlider(
+                    appearance: CircularSliderAppearance(),
+                    min: 0,
+                    max: 15,
+                    initialValue: widget.newsData.readingTime,
+                  ),
+                  textFormatted("Reading Time (M)", 20, FontWeight.w500, Color(0xff003045))
+                ],
               )
             ),
             
@@ -134,11 +144,16 @@ class _ResultsState extends State<Results>{
                 margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 alignment: Alignment.center,
                 // color: Colors.blue,
-                child: SleekCircularSlider(
-                  appearance: CircularSliderAppearance(),
-                  min: 0,
-                  max: 100,
-                  initialValue: (widget.newsData.rating * 100),
+                child: Column(
+                  children: [
+                    SleekCircularSlider(
+                      appearance: CircularSliderAppearance(),
+                      min: 0,
+                      max: 100,
+                      initialValue: (widget.newsData.rating * 100),
+                    ),
+                    textFormatted("Rating", 20, FontWeight.w500, Color(0xff003045))
+                  ],
                 ),
               ),
           Expanded(flex: 1, child: Container(),),
@@ -149,7 +164,7 @@ class _ResultsState extends State<Results>{
 
     List<Widget> widgetList = [];
     widgetList.add(Container(
-      child: textFormatted("Related News:", 30, FontWeight.w500 ),
+      child: textFormatted("Related News:", 30, FontWeight.w500, Color(0xff003045) ),
       ));
 
     widget.newsData.relatedNews.forEach((element) {
@@ -185,50 +200,69 @@ class _ResultsState extends State<Results>{
   }
 
   Widget newsWidgetGenerator(element){
-    return Container(
-      decoration: cardDecoration(Color(0xfffaf7fa), Color(0xfffaf7fa), 15),
-      margin: EdgeInsets.all(10),
-      padding: EdgeInsets.all(5),
-      child: Row(children: <Widget>[
-        Expanded(
-          flex: 2,
-          child: Container(
-            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            decoration: cardDecoration(Colors.white, Colors.grey, 15),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(15.0),
-              child: Image.network(element['image']),
-            ),
-          )
-        ),
-        Expanded(
-          flex: 3,
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-              textFormatted("Headline: " + element['headline'], 15, FontWeight.w500),
-              textFormatted("Provider: " + element['newsProvider'], 15, FontWeight.w400),
-              textFormatted("Readability: " + element['readability'].toString(), 10, FontWeight.w400),
-              textFormatted("Reading Time: " + element['readingTime'].toString(), 10, FontWeight.w400),
-              textFormatted("Sentiment: " + element['sentiment'].toString(), 10, FontWeight.w400),
-              textFormatted("rating: " + element['rating'].toString(), 10, FontWeight.w500),
-            ],),
-          )
-          )
-        
-      ],),
-      );
+    return GestureDetector(
+      onTap: () async {
+        print("https://"+ element['url']);
+        var url = "https://" + element['url']; 
+        await launch(url);
+        // if (await canLaunch(url)) { 
+        // } 
+        // else {
+        //   throw 'Could not launch $url';
+        // }
+        // html.window.open(element['url'], "test");
+      },
+      child: Container(
+          decoration: cardDecoration(Color(0xfffaf7fa), Color(0xfffaf7fa), 15),
+          margin: EdgeInsets.all(10),
+          padding: EdgeInsets.all(5),
+          child: Column(
+            children: [
+              textFormatted("Headline: " + element['headline'], 16, FontWeight.w500, Color(0xff003045)),
+              textFormatted("Rating: " + (element['rating']*100).toStringAsFixed(2) + "%", 15, FontWeight.w500, Color(0xffa87300)),
+              Row(children: <Widget>[
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    decoration: cardDecoration(Colors.white, Colors.grey, 15),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15.0),
+                      child: Image.network(element['image']),
+                    ),
+                  )
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                      textFormatted("Provider: " + element['newsProvider'], 15, FontWeight.w400, Color(0xff003045)),
+                      textFormatted("Readability: " + element['readability'].toStringAsFixed(0) + "%", 12, FontWeight.w400, Color(0xff003045)),
+                      textFormatted("Reading Time: " + element['readingTime'].toStringAsFixed(2)+ " Minutes", 12, FontWeight.w400, Color(0xff003045)),
+                      textFormatted("Sentiment: " + (element['sentiment']*100).toStringAsFixed(0)+ "%", 12, FontWeight.w400, Color(0xff003045)),
+                    ],),
+                  )
+                  )
+                ],
+              ),
+            ],
+
+          ),
+         )
+    );
 
   }
 
-  Widget textFormatted(String str, double size, FontWeight weight){
+  Widget textFormatted(String str, double size, FontWeight weight, Color optionalColor){
     return Container(
-      padding: EdgeInsets.all(5),
-      margin: EdgeInsets.all(5),
+      padding: EdgeInsets.all(2),
+      margin: EdgeInsets.all(2),
       child: Text(str,
+        textAlign: TextAlign.center,
         style: GoogleFonts.zillaSlab(
-          color: Color(0xff003045),
+          color: optionalColor,
           fontSize: size,
           fontWeight: weight,
           )
@@ -277,13 +311,6 @@ class _ResultsState extends State<Results>{
             Center(
               child: Column(children: <Widget>[
                 Image(image: AssetImage('assets/cover.png')),
-                Text(widget.newsData.provider + ".com",
-                  style: GoogleFonts.zillaSlab(
-                              color: Color(0xff003045),
-                              fontSize: 25.0,
-                              fontWeight: FontWeight.w500,
-                            )
-                ),
               ],)
               // child: Hero(
               //   tag: 'logo',
