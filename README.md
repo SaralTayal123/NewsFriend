@@ -1,20 +1,38 @@
-# NewsFriend (work in progress)
+# NewsFriend
 
-A do-it-all News Helper widget to tell you all you need to know about a news link
+A do-it-all News Helper widget to tell you all you need to know about a news link!
+
+In today's day and age, people spam-share news to all their contacts often without reading the entire news article or without veryfiying if the article is the best version of the news beign shared.
+
+The NewsFriend app attempts to address that by to pre-filtering a news article before reading it. To use the app, a user simply pastes a url into the app search bar, or shares the url via the phone's share button. The app will find then analyze the news article shared and find the best alternative articles for the given news. Furthermore, the app will rank your article based on readability/complexity of language, reading time/ article length, and the article's sentiment. After doing this analysis on all the alternative articles, the algorithm will give your orignal article a rating and suggest the better alternative articles on the same news for you to read!
 
 # Features
--> Credibility of news source (running an RNN on the top 50 google searches via a Siamese network) <br>
+-> Ranking of news source (Compare against top 10 alternative news providers for the same piece of news via webscrapping) <br>
 -> Readability score (how easy is the language to read)<br>
 -> Reading time (how long will it take you to read the article)<br>
 -> Trigger-ibility analysis (Sentiment analysis of news article and comparing it to the sentiment analysis performed on other news sources to see if this article is trying to generate turmoil)  <br>
--> Clickbait title score (stright forward many-to-one RNN trained on a Clickbait/FakeNews dataset)(low priority)  <br>
--> Summary (get a summary of the article without opening and reading it. Use an encoder/decoder RNN architecture built on LSTMs and attention vectors)(reach goal)<br>
--> comparison of all of the above metrics against the top 10 most similar articles to offer you alternate choices of news on the same topic <br>
 -> reccomendation for 5 other articles that are easier to read/shorter/offer more neutral emotions (customizable filters)<br>
--> caching (long term goal to prevent recomputing these features for the same article) (Use a database...)<br>
--> Dope dashboard!!!<br>
+-> Digestable dashboard!<br>
 
 # Packaging
--> Run as a chrome extension and as a flutter app (chrome extension will let you right click on links)<br>
--> Have a server perform a lot of computations and offer results as an API (Using FastAPI right now). Looking at deploying on Heroku <br>
--> Training done via TF2 (Keras) on python. Transfer weights/parameters to API service <br>
+-> Have a server perform a lot of computations and offer results as an API (Using FastAPI & Heroku right now) <br>
+-> Mobile app built on Flutter to easily deploy to IOS, Android, and possibly as a webapp too <br>
+
+Checkout the API here: https://github.com/SaralTayal123/NewsFriendPublicAPI
+
+# Screenshots
+### Landing page
+<img src="./newsfriendsample1.jpg" width="30%">
+
+### Processing page
+
+<img src="./newsfriendsample2.jpg" width="30%">
+
+### Results page
+
+<img src="./newsfriendsample3.jpg" width="30%">
+
+### Results page(scrolled down)
+
+<img src="./newsfriendsample4.jpg" width="30%">
+
